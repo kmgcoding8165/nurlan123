@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI байер: PRD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: плакатный fashion-лукбук. Крупный Oswald, цветные плитки, висящий жёлтый ценник в hero. */
+:root{
+  --bg:#f6f4ff; --surface:#ffffff; --ink:#0b1b4d; --muted:#4d5a85; --line:#d9dcf0;
+  --cobalt:#1f4bff; --sun:#ffd23f; --coral:#ff5d4a; --mint:#2fd5a0; --pink:#ff8fc7; --lilac:#b8a4ff;
+  --on-cobalt:#ffffff; --on-sun:#0b1b4d;
+  --f-display:"Oswald","Arial Narrow",Impact,sans-serif; --f-body:"Manrope",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0a1030; --surface:#131b45; --ink:#f1f2ff; --muted:#a6afdb; --line:#2a3470;
+  --cobalt:#5b7cff; --on-cobalt:#0a1030; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0a1030; --surface:#131b45; --ink:#f1f2ff; --muted:#a6afdb; --line:#2a3470;
+  --cobalt:#5b7cff; --on-cobalt:#0a1030; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--f-body);padding-inline:clamp(16px,4vw,48px)}
+.wrap{max-width:1120px;margin-inline:auto}
+h1,h2,h3{font-family:var(--f-display);text-transform:uppercase;line-height:1;margin:0;text-wrap:balance;letter-spacing:.01em}
+h2{font-size:clamp(2rem,5vw,3.4rem);margin-bottom:.4em}
+h3{font-size:1.25rem;font-weight:500}
+p{margin:0 0 .8em}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+.eyebrow{font:700 .75rem/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+section{padding-block:clamp(40px,7vw,88px)}
+.lead{font-size:1.15rem;max-width:62ch;color:var(--muted)}
+
+/* nav */
+nav{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line);margin-inline:calc(clamp(16px,4vw,48px)*-1);padding-inline:clamp(16px,4vw,48px)}
+nav .wrap{display:flex;align-items:center;gap:16px;padding-block:10px}
+.logo{font:700 1.3rem var(--f-display);text-transform:uppercase;white-space:nowrap}
+.logo b{background:var(--sun);color:var(--on-sun);padding:0 .25em;margin-left:.15em}
+.links{display:flex;gap:4px;overflow-x:auto;flex:1;scrollbar-width:none}
+.links a{white-space:nowrap;text-decoration:none;font-size:.85rem;font-weight:700;padding:6px 10px;border-radius:99px;color:var(--muted)}
+.links a:hover{background:var(--surface);color:var(--ink)}
+#theme{flex:none;border:2px solid var(--ink);background:none;color:var(--ink);border-radius:99px;padding:5px 12px;font:700 .8rem var(--f-body);cursor:pointer}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.25fr 1fr;gap:32px;align-items:center;padding-block:clamp(32px,6vw,72px)}
+.hero h1{font-size:clamp(3.2rem,11vw,7.5rem);font-weight:700}
+.hero h1 span{color:var(--cobalt)}
+.hero h1 em{font-style:normal;background:var(--sun);color:var(--on-sun);padding:0 .12em}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin-top:24px;font-size:.9rem}
+.meta dt{color:var(--muted);font-weight:700}.meta dd{margin:0}
+.tagwrap{display:flex;justify-content:center;min-width:0}
+.tag{position:relative;width:min(100%,340px);background:var(--sun);color:var(--on-sun);border-radius:20px;padding:54px 28px 28px;transform-origin:50% -60px;animation:swing 4.5s ease-in-out infinite;box-shadow:0 18px 0 -6px rgba(11,27,77,.12)}
+.tag::before{content:"";position:absolute;top:18px;left:50%;width:22px;height:22px;margin-left:-11px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 3px var(--on-sun)}
+.tag::after{content:"";position:absolute;top:-70px;left:50%;width:3px;height:90px;background:var(--on-sun);margin-left:-1.5px;z-index:-1}
+.tag small{font:700 .7rem var(--f-body);letter-spacing:.14em;text-transform:uppercase}
+.tag .was{font:500 1.4rem var(--f-display);text-decoration:line-through;text-decoration-color:var(--coral);text-decoration-thickness:3px;margin-top:10px}
+.tag .now{font:700 3.6rem/1 var(--f-display)}
+.tag .save{display:inline-block;margin-top:14px;background:var(--coral);color:#fff;font:700 1rem var(--f-display);padding:6px 14px;border-radius:99px;text-transform:uppercase}
+.tag p{margin:14px 0 0;font-size:.75rem;font-weight:500}
+@keyframes swing{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@media (prefers-reduced-motion:reduce){.tag{animation:none}}
+
+/* tiles */
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.tile{border-radius:20px;padding:24px;min-width:0}
+.t-cobalt{background:var(--cobalt);color:var(--on-cobalt)}
+.t-sun{background:var(--sun);color:var(--on-sun)}
+.t-coral{background:var(--coral);color:#fff}
+.t-mint{background:var(--mint);color:#06281e}
+.t-pink{background:var(--pink);color:#3a0f26}
+.t-lilac{background:var(--lilac);color:#1d1052}
+.t-surface{background:var(--surface);border:1px solid var(--line)}
+.tile h3{margin-bottom:10px}
+.tile ul{margin:0;padding-left:1.1em}.tile li{margin-bottom:.4em}
+.big{font:700 clamp(2.4rem,5vw,3.6rem)/1 var(--f-display)}
+
+/* quotes */
+.quotes{display:grid;gap:12px}
+.quote{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 20px}
+.quote i{font:700 2rem/1 var(--f-display);color:var(--cobalt);font-style:normal}
+
+/* flow */
+.flows{display:grid;gap:20px}
+.flow{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px 24px}
+.flow header{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.flow .letter{font:700 1.4rem var(--f-display);width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff}
+.steps{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;list-style:none;margin:0;padding-left:0}
+.steps li{flex:0 0 auto;width:200px;background:var(--bg);border-radius:14px;padding:12px 14px;font-size:.88rem;position:relative}
+.steps li:not(:last-child)::after{content:"→";position:absolute;right:-14px;top:50%;transform:translateY(-50%);font-weight:800;color:var(--muted);z-index:1}
+
+/* features */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tabs button,.seg button{font:700 .85rem var(--f-body);border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:99px;padding:7px 14px;cursor:pointer}
+.tabs button[aria-pressed="true"],.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.92rem}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:700 .72rem var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.id{font:700 .8rem ui-monospace,Consolas,monospace;color:var(--muted);white-space:nowrap}
+.p{display:inline-block;font:700 .75rem var(--f-body);padding:2px 9px;border-radius:99px}
+.p0{background:var(--coral);color:#fff}.p1{background:var(--sun);color:var(--on-sun)}.p2{background:var(--lilac);color:#1d1052}
+
+/* calc */
+.calc{display:grid;grid-template-columns:1fr 1.1fr;gap:24px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;min-width:0}
+.field{margin-bottom:18px}
+.field label,.field .lab{display:flex;justify-content:space-between;font-weight:700;font-size:.85rem;margin-bottom:6px;gap:8px}
+.field output{font-variant-numeric:tabular-nums;color:var(--cobalt)}
+input[type=range]{width:100%;accent-color:var(--cobalt)}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.bar{display:flex;height:56px;border-radius:14px;overflow:hidden;margin:16px 0 12px;background:var(--bg)}
+.bar div{min-width:2px;transition:flex-basis .3s}
+.legend{display:grid;gap:8px;list-style:none;padding:0;margin:0}
+.legend li{display:flex;align-items:center;gap:10px;font-size:.92rem}
+.legend i{width:14px;height:14px;border-radius:4px;flex:none}
+.legend b{margin-left:auto;font-variant-numeric:tabular-nums}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.compare div{border-radius:14px;padding:14px 16px}
+.compare small{display:block;font:700 .7rem var(--f-body);letter-spacing:.1em;text-transform:uppercase;opacity:.85}
+.compare strong{font:700 1.8rem/1.1 var(--f-display);font-variant-numeric:tabular-nums}
+.formula{font:500 .82rem/1.7 ui-monospace,Consolas,monospace;background:var(--ink);color:var(--bg);border-radius:16px;padding:18px 20px;overflow-x:auto;margin-top:16px;white-space:pre}
+.note{font-size:.82rem;color:var(--muted)}
+
+/* roadmap */
+.road{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:0;position:relative}
+.road::before{content:"";position:absolute;left:0;right:0;top:15px;height:4px;background:var(--line)}
+.stage{position:relative;padding:40px 14px 0 0;min-width:0}
+.stage::before{content:"";position:absolute;top:6px;left:0;width:22px;height:22px;border-radius:50%;background:var(--c);border:4px solid var(--bg)}
+.stage h3{font-size:1.1rem}.stage .v{font:700 .72rem var(--f-body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.stage p{font-size:.88rem;margin-top:6px}
+
+/* status */
+.done li::marker{content:"✓  ";color:var(--mint)}
+.todo li::marker{content:"○  "}
+.risk{display:grid;grid-template-columns:1fr 1.3fr;gap:0}
+.risk div{padding:12px 16px;border-bottom:1px solid var(--line)}
+.risk div:nth-child(odd){font-weight:700}
+.risk .h{font:700 .72rem var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+ol.q{margin:0;padding:0;list-style:none;display:grid;gap:10px;counter-reset:q}
+ol.q li{counter-increment:q;display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+ol.q li::before{content:counter(q);font:700 1.5rem/1 var(--f-display);color:var(--coral)}
+footer{padding-block:32px 56px;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+
+@media (max-width:820px){
+  .hero,.calc{grid-template-columns:1fr}
+  .tagwrap{padding-top:80px}
+  .risk{grid-template-columns:1fr}
+  .risk div:nth-child(odd){border-bottom:0;padding-bottom:0}
+}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <div class="logo">AI<b>байер</b></div>
+  <div class="links">
+    <a href="#problem">Проблема</a><a href="#audience">Аудитория</a><a href="#scenarios">Сценарии</a><a href="#features">Функции</a><a href="#calc">Расчёт цены</a><a href="#roadmap">Дорожная карта</a><a href="#risks">Риски</a><a href="#open">Вопросы</a>
+  </div>
+  <button id="theme" type="button" aria-label="Переключить тему">Тема</button>
+</div></nav>
+
+<div class="wrap">
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">PRD · версия 1.0 · 12.10.2026</div>
+    <h1 style="margin-top:14px">Бренды<br><span>без</span> <em>переплат</em></h1>
+    <p class="lead" style="margin-top:20px">Веб-сервис выкупа и доставки товаров из-за рубежа в Казахстан. Находит вещь по названию или штрихкоду, сравнивает магазины и считает полную цену до вашего города.</p>
+    <dl class="meta">
+      <dt>Статус</dt><dd>Черновик, есть кликабельный прототип на демо-данных</dd>
+      <dt>Рынок</dt><dd>Республика Казахстан</dd>
+      <dt>Язык</dt><dd>Русский</dd>
+    </dl>
+  </div>
+  <div class="tagwrap">
+    <div class="tag" role="img" aria-label="Ценник: в магазине РК около 150 000 тенге, через AI байер 98 000 тенге, экономия 35 процентов">
+      <small>Ориентир розницы РК</small>
+      <div class="was">150 000 ₸</div>
+      <small style="display:block;margin-top:10px">Через AI байер до города</small>
+      <div class="now">98 000 ₸</div>
+      <span class="save">−35%</span>
+      <p>Пример для иллюстрации. Цены в прототипе демонстрационные.</p>
+    </div>
+  </div>
+</header>
+
+<section id="problem">
+  <div class="eyebrow">01 · Исходные запросы и проблема</div>
+  <h2 style="margin-top:10px">Что просила заказчица</h2>
+  <div class="quotes">
+    <div class="quote"><i>1</i><div>Современный, стильный, адаптивный сайт, который находит товары по миру по выгодным ценам с учётом доставки и выбором карго до города РК. От бытовых до строительных.</div></div>
+    <div class="quote"><i>2</i><div>Стильный дизайн с упором на одежду: брендовые вещи должны стать доступны многим казахстанцам.</div></div>
+    <div class="quote"><i>3</i><div>«Я нашла куртку, но моего размера нет». Нужен поиск вещи по штрихкоду.</div></div>
+  </div>
+
+  <div class="grid g2" style="margin-top:32px">
+    <div class="tile t-coral">
+      <h3>Проблема</h3>
+      <ul>
+        <li>Бренды в Казахстане дороже: наценки посредников, аренда, опт, запас размеров.</li>
+        <li>Нельзя быстро сравнить десятки зарубежных магазинов и увидеть цену вместе с доставкой.</li>
+        <li>Тарифы карго зависят от веса, объёма, способа и города, вручную их не посчитать.</li>
+        <li>Нужного размера нет, а найти ту же модель по бирке трудно.</li>
+      </ul>
+    </div>
+    <div class="tile t-cobalt">
+      <h3>Решение</h3>
+      <p>AI байер принимает запрос: название, бренд или штрихкод. Сравнивает предложения магазинов и площадок, считает итог до выбранного города и даёт выбрать карго по цене и сроку.</p>
+      <p style="margin:0">Фокус: брендовая одежда, обувь, аксессуары. Дополнительно: бытовые и строительные товары.</p>
+    </div>
+  </div>
+
+  <h3 style="margin:36px 0 14px">Цели продукта</h3>
+  <div class="grid g3">
+    <div class="tile t-sun"><div class="big">1</div>Брендовая одежда доступна широкой аудитории</div>
+    <div class="tile t-mint"><div class="big">2</div>Честная итоговая цена «до города» до заявки</div>
+    <div class="tile t-pink"><div class="big">3</div>Проблема «нет моего размера» решается по штрихкоду</div>
+    <div class="tile t-lilac"><div class="big">4</div>Все города РК с понятным выбором карго</div>
+  </div>
+
+  <h3 style="margin:36px 0 14px">Метрики успеха</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Метрика</th><th>Что измеряет</th></tr></thead>
+    <tbody>
+      <tr><td>Конверсия «поиск → заявка»</td><td>Полезность выдачи</td></tr>
+      <tr><td>Доля поисков с выбранным размером</td><td>Вовлечённость в fashion-сценарий</td></tr>
+      <tr><td>Доля успешных сканирований штрихкода</td><td>Покрытие базы и качество распознавания</td></tr>
+      <tr><td>Средняя экономия относительно розницы РК</td><td>Ключевое обещание продукта</td></tr>
+      <tr><td>Заявки, подтверждённые без пересчёта</td><td>Точность расчёта</td></tr>
+      <tr><td>Время от поиска до заявки</td><td>Удобство сценария</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note" style="margin-top:8px">Целевые значения уточняются после запуска.</p>
+</section>
+
+<section id="audience">
+  <div class="eyebrow">02 · Аудитория и область работ</div>
+  <h2 style="margin-top:10px">Для кого и что входит</h2>
+  <div class="grid g3">
+    <div class="tile t-cobalt"><h3>Покупатели брендов</h3><p style="margin:0">Основной сегмент. Оригинальные бренды дешевле, чем в местных магазинах.</p></div>
+    <div class="tile t-pink"><h3>Нет моего размера</h3><p style="margin:0">Найти ту же модель в нужном размере.</p></div>
+    <div class="tile t-sun"><h3>Ремонт и дом</h3><p style="margin:0">Стройматериалы, сантехника, техника с понятной доставкой.</p></div>
+    <div class="tile t-mint"><h3>Реселлеры</h3><p style="margin:0">Вторичный сегмент. Партии и сборные посылки в «Эконом».</p></div>
+    <div class="tile t-lilac"><h3>Регионы</h3><p style="margin:0">Актау, Атырау, Уральск и др. видят реальные сроки и тариф до своего города.</p></div>
+  </div>
+
+  <div class="grid g2" style="margin-top:32px">
+    <div class="tile t-surface">
+      <h3>В версии 1.0</h3>
+      <ul class="done" style="list-style:disc">
+        <li>Поиск по бренду и названию</li>
+        <li>Поиск по штрихкоду: камера, фото, ввод цифр</li>
+        <li>Сравнение магазинов и площадок</li>
+        <li>Итоговая цена до города РК</li>
+        <li>Карго: Авиа, Авто, Эконом</li>
+        <li>Выбор размера и проверка наличия</li>
+        <li>Бюджет и фильтр «новое / б/у»</li>
+        <li>Сравнение с розницей РК</li>
+        <li>Заявка на выкуп, «Как это работает», тарифы, FAQ</li>
+      </ul>
+    </div>
+    <div class="tile t-surface">
+      <h3>Вне версии 1.0</h3>
+      <ul class="todo">
+        <li>Онлайн-оплата и личный кабинет</li>
+        <li>Отслеживание посылок</li>
+        <li>Мобильное приложение</li>
+        <li>Автовыкуп без менеджера</li>
+        <li>Корзина из нескольких товаров (v1.1)</li>
+        <li>Таблицы соответствия размеров брендов (v1.1)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="scenarios">
+  <div class="eyebrow">03 · Пользовательские сценарии</div>
+  <h2 style="margin-top:10px">Пять путей к заявке</h2>
+  <div class="flows">
+    <article class="flow">
+      <header><span class="letter" style="background:var(--cobalt)">A</span><h3>Поиск по названию</h3></header>
+      <ol class="steps">
+        <li>Вводит бренд и вещь (Nike Air Force 1), город, размер, количество</li>
+        <li>AI показывает шаги расчёта и список предложений</li>
+        <li>Выбирает предложение и карго</li>
+        <li>Видит цену, срок, экономию и оформляет заявку</li>
+      </ol>
+    </article>
+    <article class="flow">
+      <header><span class="letter" style="background:var(--coral)">B</span><h3>«Нет моего размера»: штрихкод</h3></header>
+      <ol class="steps">
+        <li>Видит вещь в магазине, нужного размера нет</li>
+        <li>Сканирует бирку: камера, фото или цифры</li>
+        <li>Система проверяет код, находит модель и размер на бирке</li>
+        <li>Пользователь выбирает нужный размер</li>
+        <li>Поиск той же модели; магазины без размера внизу</li>
+        <li>Размера нет нигде: предложить ближайшие</li>
+      </ol>
+    </article>
+    <article class="flow">
+      <header><span class="letter" style="background:var(--mint);color:#06281e">C</span><h3>Подбор под бюджет</h3></header>
+      <ol class="steps">
+        <li>Задаёт бюджет в тенге</li>
+        <li>Предложения в бюджете помечены, остальные затемнены</li>
+        <li>Ничего не подходит: AI советует «Эконом» или б/у</li>
+      </ol>
+    </article>
+    <article class="flow">
+      <header><span class="letter" style="background:var(--sun);color:var(--on-sun)">D</span><h3>Стройматериалы и бытовые товары</h3></header>
+      <ol class="steps">
+        <li>Вводит товар и количество (керамогранит, ламинат, смеситель)</li>
+        <li>Система учитывает вес и объём, считает по объёмному весу и скидкам</li>
+        <li>Показывает, где доставка выгоднее</li>
+      </ol>
+    </article>
+    <article class="flow">
+      <header><span class="letter" style="background:var(--lilac);color:#1d1052">E</span><h3>Товара нет в базе</h3></header>
+      <ol class="steps">
+        <li>Вводит произвольный бренд и вещь</li>
+        <li>Категория, цена и вес оцениваются по средним, с пометкой «оценка»</li>
+        <li>Менеджер уточняет расчёт после заявки</li>
+      </ol>
+    </article>
+  </div>
+</section>
+
+<section id="features">
+  <div class="eyebrow">04 · Функциональные требования</div>
+  <h2 style="margin-top:10px">Что должен уметь сервис</h2>
+  <p class="lead">P0 нужно для запуска, P1 важно, P2 желательно.</p>
+  <div class="tabs" id="featTabs" role="group" aria-label="Группа требований" style="margin-top:20px"></div>
+  <div class="scroll"><table>
+    <thead><tr><th>ID</th><th>Требование</th><th>Приоритет</th></tr></thead>
+    <tbody id="featBody"></tbody>
+  </table></div>
+</section>
+
+<section id="calc">
+  <div class="eyebrow">05 · Логика расчёта</div>
+  <h2 style="margin-top:10px">Куда уходят ваши деньги</h2>
+  <p class="lead">Поиграйте с параметрами. Формулы и коэффициенты взяты из PRD (раздел 9). Доставка до склада и скидки за вес здесь не учитываются.</p>
+  <div class="calc" style="margin-top:24px">
+    <div class="panel">
+      <div class="field"><label for="price">Цена вещи, $ <output id="priceO"></output></label><input id="price" type="range" min="20" max="600" step="5" value="120"></div>
+      <div class="field"><label for="weight">Вес, кг <output id="weightO"></output></label><input id="weight" type="range" min="0.5" max="20" step="0.5" value="2"></div>
+      <div class="field"><label for="markup">Наценка в рознице РК, × <output id="markupO"></output></label><input id="markup" type="range" min="1.2" max="3" step="0.1" value="2"></div>
+      <div class="field"><span class="lab">Страна отправки</span><div class="seg" id="country"></div></div>
+      <div class="field"><span class="lab">Карго</span><div class="seg" id="cargo"></div></div>
+      <div class="field" style="margin-bottom:0"><span class="lab">Город</span><div class="seg" id="city"></div></div>
+    </div>
+    <div class="panel">
+      <div class="compare">
+        <div class="t-sun"><small>Розница РК (оценка)</small><strong id="retail"></strong></div>
+        <div class="t-cobalt"><small>Через AI байер</small><strong id="total"></strong></div>
+      </div>
+      <div class="bar" id="bar" role="img" aria-label="Состав итоговой цены"></div>
+      <ul class="legend" id="legend"></ul>
+      <p id="saving" style="margin:16px 0 0;font-weight:800;font-size:1.1rem"></p>
+      <p class="note" style="margin:6px 0 0" id="calcNote"></p>
+    </div>
+  </div>
+<div class="formula">Итого = Цена вещи + Доставка до склада + Карго + Услуга байера
+
+Цена вещи        = базовая цена × коэф. магазина × количество × курс
+Карго            = max( оплачиваемый вес × тариф × коэф. страны × скидка за вес × коэф. города × курс ; 1 500 ₸ )
+Оплачиваемый вес = max( фактический вес ; объём × коэф. объёмного веса )
+Услуга байера    = max( 5% × (вещь + доставка до склада) ; 1 500 ₸ )
+Курс (демо)      = 1 $ = 520 ₸</div>
+
+  <h3 style="margin:36px 0 14px">Параметры карго (демо)</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Способ</th><th class="num">Тариф $/кг (Китай)</th><th class="num">Срок, дн.</th><th>Минимум</th></tr></thead>
+    <tbody>
+      <tr><td><b>Авиа</b></td><td class="num">7,4</td><td class="num">5–8</td><td>нет</td></tr>
+      <tr><td><b>Авто</b></td><td class="num">3,2</td><td class="num">14–20</td><td>нет</td></tr>
+      <tr><td><b>Эконом</b></td><td class="num">2,0</td><td class="num">25–35</td><td>5 кг</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note" style="margin-top:8px">Коэффициенты страны: Китай 1,0, Турция 1,3, Европа 1,7, США 2,1. Коэффициенты городов: от 1,00 (Алматы) до 1,42 (Актау), всего 18 городов.</p>
+
+  <h3 style="margin:36px 0 14px">Алгоритм подбора</h3>
+  <div class="grid g3">
+    <div class="tile t-mint"><h3>Дешевле</h3><p style="margin:0">Минимум итоговой цены.</p></div>
+    <div class="tile t-coral"><h3>Быстрее</h3><p style="margin:0">Минимум срока, затем цены.</p></div>
+    <div class="tile t-lilac"><h3>Баланс</h3><p style="margin:0">Цена × (1 + средний срок / 45).</p></div>
+  </div>
+  <p class="note" style="margin-top:10px">Предложения без нужного размера получают штраф и уходят в конец списка.</p>
+</section>
+
+<section id="design">
+  <div class="eyebrow">06 · Дизайн и интеграции</div>
+  <h2 style="margin-top:10px">Визуальный язык</h2>
+  <div class="grid g2">
+    <div class="tile t-surface">
+      <h3>Палитра</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px">
+        <span class="p" style="background:var(--cobalt);color:var(--on-cobalt);padding:8px 14px">Кобальт</span>
+        <span class="p" style="background:var(--sun);color:var(--on-sun);padding:8px 14px">Солнечный жёлтый</span>
+        <span class="p" style="background:var(--coral);color:#fff;padding:8px 14px">Коралл</span>
+        <span class="p" style="background:var(--mint);color:#06281e;padding:8px 14px">Мята</span>
+        <span class="p" style="background:var(--pink);color:#3a0f26;padding:8px 14px">Розовый</span>
+        <span class="p" style="background:var(--lilac);color:#1d1052;padding:8px 14px">Сирень</span>
+      </div>
+      <p style="margin:0">Типографика: <b style="font-family:var(--f-display);text-transform:uppercase;font-size:1.2em">Oswald</b> для плакатных заголовков, <b>Manrope</b> для текста. Обе поддерживают кириллицу. Светлая и тёмная темы.</p>
+    </div>
+    <div class="tile t-surface">
+      <h3>Принципы UX</h3>
+      <ul>
+        <li>Мобильные устройства в приоритете, корректно от 360 px</li>
+        <li>Прозрачность цены: всегда виден состав суммы</li>
+        <li>Честность: оценки и демо-данные помечены</li>
+        <li>Видимый фокус, учёт <code>prefers-reduced-motion</code></li>
+        <li>Анимации только у ценника и индикаторов поиска</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin:36px 0 14px">Интеграции для рабочей версии</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Область</th><th>Что нужно</th><th>В прототипе</th></tr></thead>
+    <tbody>
+      <tr><td>Цены и наличие</td><td>API или фиды Zalando, ASOS, Farfetch, Nordstrom Rack, Trendyol, Poizon, Vinted</td><td>Имитация</td></tr>
+      <tr><td>Размеры</td><td>Остатки по размерам</td><td>Имитация</td></tr>
+      <tr><td>Штрихкоды</td><td>GS1, API брендов или сервисов штрихкодов</td><td>6 демо-кодов</td></tr>
+      <tr><td>Карго</td><td>Тарифы и сроки партнёров по городам</td><td>Демо-значения</td></tr>
+      <tr><td>Курсы</td><td>Актуальный курс тенге</td><td>1 $ = 520 ₸</td></tr>
+      <tr><td>Заявки</td><td>CRM, WhatsApp Business API, email</td><td>Не подключено</td></tr>
+      <tr><td>Розница РК</td><td>Цены местных магазинов</td><td>Оценка по наценке</td></tr>
+      <tr><td>Оплата</td><td>Платёжный шлюз в тенге</td><td>Вне версии 1.0</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 style="margin:36px 0 14px">Нефункциональные требования</h3>
+  <div class="grid g3">
+    <div class="tile t-surface"><h3>Скорость</h3><p style="margin:0">Загрузка до 3 с на 4G. Ответ поиска до 3 с после подключения API.</p></div>
+    <div class="tile t-surface"><h3>Совместимость</h3><p style="margin:0">Chrome, Safari, Edge, Firefox; Android и iOS. Камера только по HTTPS; в Safari на iOS приоритет у «фото бирки».</p></div>
+    <div class="tile t-surface"><h3>Данные</h3><p style="margin:0">Закон РК о персональных данных, согласие на обработку, защита формы от спама.</p></div>
+    <div class="tile t-surface"><h3>Локализация</h3><p style="margin:0">Русский, тенге, формат <code>ru-RU</code>. Казахский язык в следующей очереди.</p></div>
+    <div class="tile t-surface"><h3>Надёжность</h3><p style="margin:0">Корректное поведение без камеры, API и запасных библиотек.</p></div>
+    <div class="tile t-surface"><h3>Аналитика</h3><p style="margin:0">Поиск, выбор размера, сканирование, выбор карго, отправка заявки.</p></div>
+  </div>
+</section>
+
+<section id="roadmap">
+  <div class="eyebrow">07 · Дорожная карта</div>
+  <h2 style="margin-top:10px">От прототипа к приложению</h2>
+  <div class="road" style="margin-top:28px">
+    <div class="stage" style="--c:var(--mint)"><span class="v">Сейчас</span><h3>MVP</h3><p>Fashion-дизайн, поиск, расчёт, карго, размеры, штрихкод на демо-данных.</p></div>
+    <div class="stage" style="--c:var(--cobalt)"><span class="v">v1.0</span><h3>Реальные данные</h3><p>Магазины, база штрихкодов, тарифы карго, заявки в CRM/WhatsApp, аналитика.</p></div>
+    <div class="stage" style="--c:var(--sun)"><span class="v">v1.1</span><h3>Корзина</h3><p>Несколько вещей с общим расчётом посылки, подсказка набрать вес для «Эконом», таблицы размеров.</p></div>
+    <div class="stage" style="--c:var(--coral)"><span class="v">v1.2</span><h3>Кабинет</h3><p>Личный кабинет, отслеживание заказов, онлайн-оплата в тенге.</p></div>
+    <div class="stage" style="--c:var(--lilac)"><span class="v">v2.0</span><h3>Приложение</h3><p>Казахский язык, мобильное приложение, уведомления о размере, сохранённые поиски.</p></div>
+  </div>
+
+  <h3 style="margin:48px 0 14px">Состояние прототипа</h3>
+  <div class="grid g2">
+    <div class="tile t-mint">
+      <h3>Реализовано</h3>
+      <ul class="done" style="list-style:disc">
+        <li>Главный «ценник», иллюстрации одежды, две темы</li>
+        <li>Поиск по 20 моделям и произвольному запросу</li>
+        <li>7 источников, 3 вида карго, 18 городов</li>
+        <li>Размеры и имитация наличия</li>
+        <li>Бюджет, фильтр новое / б/у</li>
+        <li>Сканер: камера, фото, цифры, проверка контрольной цифры, 6 демо-кодов</li>
+        <li>Форма заявки без отправки</li>
+      </ul>
+    </div>
+    <div class="tile t-coral">
+      <h3>Не реализовано</h3>
+      <ul class="todo">
+        <li>Реальные цены, остатки, тарифы, штрихкоды</li>
+        <li>Отправка заявок, оплата, личный кабинет</li>
+        <li>Казахская локализация</li>
+      </ul>
+      <p style="margin:12px 0 0;font-weight:700">Все цены, курсы и тарифы в прототипе иллюстративные и не являются офертой.</p>
+    </div>
+  </div>
+</section>
+
+<section id="risks">
+  <div class="eyebrow">08 · Риски</div>
+  <h2 style="margin-top:10px">Что может пойти не так</h2>
+  <div class="scroll"><div class="risk" style="min-width:0">
+    <div class="h">Риск или допущение</div><div class="h">Мера</div>
+    <div>Подлинность вещей, особенно б/у</div><div>Официальные магазины и площадки с проверкой; проверка бирок, швов, комплектации на складе; пометка «Б/у»</div>
+    <div>Меняются пошлины и лимиты</div><div>Не обещать беспошлинность; менеджер проверяет условия; ссылка на КГД РК</div>
+    <div>Штрихкода нет в базах</div><div>Сценарий «описать словами», фото бирки менеджеру</div>
+    <div>Цены и остатки быстро меняются</div><div>Предварительная цена, окончательную подтверждает менеджер</div>
+    <div>Оценка розницы РК неточна</div><div>Пометка «оценка», затем реальные цены местных магазинов</div>
+    <div>Размерные сетки брендов различаются</div><div>Таблицы соответствия и проверка менеджером</div>
+    <div>Права на торговые марки</div><div>Дисклеймер о несвязанности с брендами; юридическая проверка</div>
+    <div>Камера недоступна в части браузеров</div><div>Три способа ввода и понятные сообщения об ошибках</div>
+  </div></div>
+</section>
+
+<section id="open">
+  <div class="eyebrow">09 · Открытые вопросы</div>
+  <h2 style="margin-top:10px">Нужно решить до v1.0</h2>
+  <ol class="q">
+    <li>Какие карго-компании и тарифы подключаем, как часто они обновляются?</li>
+    <li>Какие магазины приоритетны для старта, есть ли партнёрские соглашения или API?</li>
+    <li>Какую базу штрихкодов использовать и что делать с вещами, которых в ней нет?</li>
+    <li>Как проверяется подлинность и что делать при нарушении или браке?</li>
+    <li>Порядок оплаты, возвратов и обмена по размеру?</li>
+    <li>Как оформляются пошлины при превышении лимитов и кто отвечает?</li>
+    <li>Нужен ли казахский язык в первой версии?</li>
+    <li>Нужен ли оптовый режим для реселлеров?</li>
+    <li>Какие юридические документы нужны для персональных данных?</li>
+    <li>Каналы связи: WhatsApp, Telegram, телефон, email?</li>
+  </ol>
+</section>
+
+<footer>PRD «AI байер», версия 1.0, 12.10.2026. Страница визуализирует документ PRD.md. Все цифры расчёта демонстрационные.</footer>
+</div>
+
+<script>
+/* --- тема --- */
+(function(){
+  var root=document.documentElement,btn=document.getElementById('theme');
+  try{var s=localStorage.getItem('theme');if(s)root.setAttribute('data-theme',s)}catch(e){}
+  btn.addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme:dark)').matches);
+    var n=dark?'light':'dark';root.setAttribute('data-theme',n);
+    try{localStorage.setItem('theme',n)}catch(e){}
+  });
+})();
+
+/* --- таблица требований --- */
+var FEATS={
+ 'Поиск и подбор':[['F-01','Поиск по бренду и названию на русском и английском','P0'],['F-02','Для неизвестных запросов оценка категории, цены и веса с пометкой «оценка»','P0'],['F-03','Показ хода расчёта (шаги AI)','P1'],['F-04','Быстрые запросы и популярные бренды','P1'],['F-05','Каталог категорий с ценой «от … ₸ до вашего города»','P1']],
+ 'Сравнение':[['F-10','Предложения магазинов Европы, США, Турции и Китая','P0'],['F-11','Цена вещи, доставка до склада, карго, услуга байера, итого, срок','P0'],['F-12','Сортировка: «Дешевле», «Баланс», «Быстрее»','P0'],['F-13','Метки: «Лучший выбор», «Дешевле всех», «Быстрее всех», «Проверка подлинности», «Б/у»','P1'],['F-14','Фильтр «Только новое» (по умолчанию) и «Новое и б/у»','P1'],['F-15','Бюджет с пометкой «В бюджете»','P1'],['F-16','Б/у только при количестве до 2 штук','P2']],
+ 'Карго и цена':[['F-20','Авиа, Авто, Эконом (сборный груз от 5 кг)','P0'],['F-21','Больший из фактического и объёмного веса × тариф × коэф. страны × коэф. города, с минимальным платежом','P0'],['F-22','Скидки за вес при больших партиях','P1'],['F-23','Срок = до склада + обработка + перевозка + надбавка за город','P0'],['F-24','Ручной выбор карго или автоподбор','P0'],['F-25','Автоподбор с пояснением, если способ недоступен','P1'],['F-26','Услуга байера 5%, минимум 1 500 ₸','P0'],['F-27','Схема маршрута: магазин → склад → город','P2'],['F-28','Тарифы и сроки по 18 городам с переключателем страны','P1']],
+ 'Размеры':[['F-30','Сетки: XS–XXL, обувь EU 38–46, талия 28–36, без размера для аксессуаров','P0'],['F-31','Выбор размера в результатах','P0'],['F-32','В строке: доступные размеры и «Размер X есть / Нет размера X»','P0'],['F-33','Предложения без нужного размера опускаются и затемняются','P0'],['F-34','Если размера нет нигде, ближайшие размеры и число магазинов','P1'],['F-35','Таблицы соответствия размеров брендов и стран','P2']],
+ 'Штрихкод':[['F-40','Сканер в модальном окне с главного экрана и из отдельного блока','P0'],['F-41','Камера, фото бирки, ручной ввод цифр','P0'],['F-42','EAN-13, EAN-8, UPC-A, UPC-E, Code 128','P0'],['F-43','Проверка длины и контрольной цифры (GS1)','P0'],['F-44','Результат: модель, изображение, размер на бирке, выбор размера','P0'],['F-45','После выбора размера запуск поиска по модели','P0'],['F-46','Код не найден: сообщение и переход к описанию словами','P0'],['F-47','Камера недоступна: переход к фото или цифрам','P0'],['F-48','Запасной декодер без нативного BarcodeDetector','P1'],['F-49','Отправка фото бирки менеджеру','P2']],
+ 'Экономия':[['F-50','«Ценник» на главном экране: розница РК, цена через AI байер, процент экономии','P0'],['F-51','Блок «Куда уходят ваши деньги»','P1'],['F-52','Цена РК помечена как оценка по средней наценке','P0']],
+ 'Заявка и инфо':[['F-60','Форма: имя, телефон или WhatsApp, комментарий с автозаполнением расчёта','P0'],['F-61','Валидация телефона','P0'],['F-62','Передача заявки в CRM или WhatsApp менеджера (в прототипе нет)','P0'],['F-63','Раздел «Как это работает»','P1'],['F-64','«Частые вопросы»: подлинность, размеры, цена, таможня, Эконом, штрихкод','P1']]
+};
+(function(){
+  var tabs=document.getElementById('featTabs'),body=document.getElementById('featBody'),names=Object.keys(FEATS);
+  function show(n){
+    Array.prototype.forEach.call(tabs.children,function(b){b.setAttribute('aria-pressed',b.textContent===n)});
+    body.innerHTML=FEATS[n].map(function(r){return '<tr><td class="id">'+r[0]+'</td><td>'+r[1]+'</td><td><span class="p p'+r[2][1]+'">'+r[2]+'</span></td></tr>'}).join('');
+  }
+  names.forEach(function(n){var b=document.createElement('button');b.type='button';b.textContent=n;b.onclick=function(){show(n)};tabs.appendChild(b)});
+  show(names[0]);
+})();
+
+/* --- калькулятор --- */
+(function(){
+  var RATE=520,MINC=1500;
+  var C={'Китай':1,'Турция':1.3,'Европа':1.7,'США':2.1};
+  var G={'Авиа':{t:7.4,d:'5–8 дн. в пути',min:0},'Авто':{t:3.2,d:'14–20 дн. в пути',min:0},'Эконом':{t:2.0,d:'25–35 дн. в пути',min:5}};
+  var T={'Алматы':1.00,'Актау':1.42};
+  var st={country:'Китай',cargo:'Авто',city:'Алматы'};
+  var $=function(i){return document.getElementById(i)};
+  var fmt=function(n){return Math.round(n).toLocaleString('ru-RU').replace(/ /g,' ')+' ₸'};
+  function seg(id,obj,key){
+    var el=$(id);
+    Object.keys(obj).forEach(function(k){
+      var b=document.createElement('button');b.type='button';b.textContent=k;
+      b.onclick=function(){st[key]=k;mark();calc()};el.appendChild(b);
+    });
+  }
+  function mark(){['country','cargo','city'].forEach(function(id){
+    Array.prototype.forEach.call($(id).children,function(b){b.setAttribute('aria-pressed',b.textContent===st[id])});
+  })}
+  function calc(){
+    var p=+$('price').value,w=+$('weight').value,m=+$('markup').value;
+    $('priceO').textContent='$'+p;$('weightO').textContent=w.toString().replace('.',',');$('markupO').textContent='×'+m.toFixed(1).replace('.',',');
+    var g=G[st.cargo],bw=Math.max(w,g.min);
+    var item=p*RATE;
+    var cargo=Math.max(bw*g.t*C[st.country]*T[st.city]*RATE,MINC);
+    var fee=Math.max(0.05*item,MINC);
+    var total=item+cargo+fee,retail=item*m;
+    var parts=[['Вещь',item,'var(--cobalt)'],['Карго',cargo,'var(--coral)'],['Услуга байера',fee,'var(--sun)']];
+    $('bar').innerHTML=parts.map(function(x){return '<div style="flex:'+x[1]+' 1 0;background:'+x[2]+'"></div>'}).join('');
+    $('legend').innerHTML=parts.map(function(x){return '<li><i style="background:'+x[2]+'"></i>'+x[0]+'<b>'+fmt(x[1])+'</b></li>'}).join('');
+    $('retail').textContent=fmt(retail);$('total').textContent=fmt(total);
+    var diff=retail-total;
+    $('saving').textContent=diff>0?'Экономия '+fmt(diff)+' (−'+Math.round(diff/retail*100)+'%)':'В этом случае выгоды нет: '+fmt(-diff)+' переплата. Попробуйте Эконом или другую страну.';
+    $('calcNote').textContent=g.d+(bw>w?'. Минимальный вес «Эконом» 5 кг':'')+(cargo===MINC?'. Применён минимальный платёж за карго':'')+'.';
+  }
+  seg('country',C,'country');seg('cargo',G,'cargo');seg('city',T,'city');mark();
+  ['price','weight','markup'].forEach(function(i){$(i).addEventListener('input',calc)});
+  calc();
+})();
+</script>
+</body>
+</html>
